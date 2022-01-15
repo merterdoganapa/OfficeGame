@@ -8,7 +8,8 @@ namespace OfficeObjects
     {
         public void Click()
         {
-            //TODO Door Animation
+            ClickedObjectController.Instance.SetClickedObject(gameObject);
+            ClickedObjectController.Instance.OnDoorClick(this);
         }
     }
 
