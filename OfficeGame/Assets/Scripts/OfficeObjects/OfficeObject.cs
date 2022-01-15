@@ -9,7 +9,7 @@ namespace OfficeObjects
         protected MeshRenderer meshRenderer;
         protected Material defaultMaterial;
 
-        protected void Awake()
+        public virtual void Awake()
         {
             if (GetComponent<MeshRenderer>() != null)
             {
