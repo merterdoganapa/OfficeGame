@@ -5,7 +5,7 @@ using DG.Tweening;
 
 namespace OfficeObjects
 {
-    public class Glass : OfficeObject, IClickable
+    public class Glass : OfficeObject
     {
         [SerializeField] private Transform waterLevel;
         [SerializeField] private ParticleSystem glassParticleSystem;
@@ -25,10 +25,13 @@ namespace OfficeObjects
             return isFull;
         }
 
-        public void Click()
+        public override void Click()
         {
-            ClickedObjectController.Instance.SetClickedObject(gameObject);
-            ClickedObjectController.Instance.OnGlassClick(this,isTrashable);
+            if (ClickedObjectController.canClickable[objectName])
+            {
+                base.Click();
+                ClickedObjectController.Instance.OnGlassClick(this, isTrashable);
+            }
         }
 
         public IEnumerator PourWater()

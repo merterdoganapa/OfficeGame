@@ -4,11 +4,12 @@ using UnityEngine;
 
 namespace OfficeObjects
 {
-    public class OfficeObject : MonoBehaviour
+    public class OfficeObject : MonoBehaviour, IClickable
     {
+        [SerializeField] protected string objectName = "";
         protected MeshRenderer meshRenderer;
         protected Material defaultMaterial;
-
+        
         public virtual void Awake()
         {
             if (GetComponent<MeshRenderer>() != null)
@@ -17,6 +18,12 @@ namespace OfficeObjects
                 defaultMaterial = meshRenderer.material;
             }
         }
+
+        public virtual void Click()
+        {
+            ClickedObjectController.Instance.SetClickedObject(gameObject);
+        }
+
         protected void SetMeshMaterial(Material material)
         {
             if(meshRenderer)
@@ -27,5 +34,7 @@ namespace OfficeObjects
             if(meshRenderer)
                 meshRenderer.material = defaultMaterial;
         }
+
+        
     }
 }

@@ -6,7 +6,7 @@ using System;
 
 namespace OfficeObjects
 {
-    public class WaterDispenser : OfficeObject, IClickable
+    public class WaterDispenser : OfficeObject
     {
         [SerializeField] private GameObject glassPlaceHolder;
         [SerializeField] private ParticleSystem glassParticalSys;
@@ -19,12 +19,19 @@ namespace OfficeObjects
             isGlassArrived = false;
         }
 
-        public void Click()
+        public override void Click()
         {
-            if (glass == null)
-                return;
-            else if(isGlassArrived && !glass.IsFull())
-                StartCoroutine(PourWaterToGlass());
+            if (ClickedObjectController.canClickable[objectName])
+            {
+                if (glass == null)
+                    return;
+                else if (isGlassArrived && !glass.IsFull()) 
+                {
+                    base.Click();
+                    ClickedObjectController.Instance.OnWaterDispenserClick(this);
+                    StartCoroutine(PourWaterToGlass());
+                }
+            }
         }
         IEnumerator PourWaterToGlass() {
             glassParticalSys.Play();

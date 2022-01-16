@@ -5,13 +5,16 @@ using DG.Tweening;
 
 namespace OfficeObjects
 {
-    public class Plant : OfficeObject,IClickable
+    public class Plant : OfficeObject
     {
         [SerializeField] private Transform plantTransform;
-        public void Click()
+        public override void Click()
         {
-            ClickedObjectController.Instance.SetClickedObject(gameObject);
-            ClickedObjectController.Instance.OnPlantClick(this);
+            if (ClickedObjectController.canClickable[objectName])
+            {
+                base.Click();
+                ClickedObjectController.Instance.OnPlantClick(this);
+            }
         }
 
         public IEnumerator Grow() {

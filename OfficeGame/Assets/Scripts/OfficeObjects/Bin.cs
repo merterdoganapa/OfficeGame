@@ -4,13 +4,16 @@ using UnityEngine;
 
 namespace OfficeObjects
 {
-    public class Bin : OfficeObject, IClickable
+    public class Bin : OfficeObject
     {
         [SerializeField] private AudioSource audioSource;
-        public void Click()
+        public override void Click()
         {
-            ClickedObjectController.Instance.SetClickedObject(gameObject);
-            ClickedObjectController.Instance.OnBinClick(this);
+            if (ClickedObjectController.canClickable[objectName]) 
+            {
+                base.Click();
+                ClickedObjectController.Instance.OnBinClick(this);
+            }
         }
 
         public void PlaySound()

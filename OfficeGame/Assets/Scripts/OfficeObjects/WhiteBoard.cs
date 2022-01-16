@@ -1,23 +1,21 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace OfficeObjects { 
-    public class WhiteBoard : OfficeObject, IClickable
+    public class WhiteBoard : OfficeObject
     {
-        public void Click()
+        public override void Click()
         {
-            GameObject prevClickedObject = ClickedObjectController.Instance.GetClickedObject();
-            ClickedObjectController.Instance.SetClickedObject(gameObject);
-            if (prevClickedObject != null && prevClickedObject.GetComponent<Pen>()!= null)
+            if (ClickedObjectController.canClickable[objectName])
             {
-                Pen pen = prevClickedObject.GetComponent<Pen>();
-                Color penColor = pen.GetColor();
-                ChangeBoardColor(penColor);
+                base.Click();
+                ClickedObjectController.Instance.OnBoardClick(this);
             }
         }
         
-        void ChangeBoardColor(Color color)
+        public void ChangeBoardColor(Color color)
         {
             Material newMaterial = MaterialExtensions.CreateMetarial("Standard", color);
             SetMeshMaterial(newMaterial);
