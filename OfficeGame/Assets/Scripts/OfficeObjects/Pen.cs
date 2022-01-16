@@ -4,12 +4,16 @@ using UnityEngine;
 
 namespace OfficeObjects { 
 
-    public class Pen : OfficeObject, IClickable
+    public class Pen : OfficeObject
     {
         [SerializeField] private Color color;
-        public void Click()
+        public override void Click()
         {
-            ClickedObjectController.Instance.SetClickedObject(gameObject);
+            if (ClickedObjectController.canClickable[objectName]) 
+            { 
+                ClickedObjectController.Instance.SetClickedObject(gameObject);
+                ClickedObjectController.Instance.OnPenClick(this);
+            }
         }
         public Color GetColor() {
             return color;

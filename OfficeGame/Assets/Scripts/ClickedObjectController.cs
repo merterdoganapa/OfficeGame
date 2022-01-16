@@ -7,13 +7,25 @@ using DG.Tweening;
 public class ClickedObjectController : MonoBehaviour
 {
     [SerializeField] private GameObject waterDispenserObject;
+    private GameObject prevClickedGameObject;
     private GameObject clickedObject;
     private Glass trashGlass;
+    public static Dictionary<string, bool> canClickable;
     public static ClickedObjectController Instance;
 
     public void Awake()
     {
         Instance = this;
+        canClickable = new Dictionary<string, bool>
+        {
+            {"Pen",true},
+            {"WhiteBoard",false},
+            {"Glass",false},
+            {"WaterDispenser",false},
+            {"Plant",false},
+            {"Bin",false },
+            {"Door",false },
+        };
     }
 
     public GameObject GetClickedObject()
@@ -23,15 +35,46 @@ public class ClickedObjectController : MonoBehaviour
 
     public void SetClickedObject(GameObject gameObject)
     {
+        prevClickedGameObject = clickedObject;
         clickedObject = gameObject;
     }
 
-    public void OnGlassClick(Glass glass,bool isTrashable) {
+    
+
+    void UpdateClickableDict(string key,bool value) {
+        canClickable[key] = value;
+    }
+
+    public void OnPenClick(Pen pen) {
+        UpdateClickableDict("WhiteBoard", true);
+        TaskController.Instance.TryNextTask(1);
+    }
+
+    public void OnGlassClick(Glass glass, bool isTrashable)
+    {
         if (!isTrashable)
         {
-            WaterDispenser waterDispensor = waterDispenserObject.GetComponent<WaterDispenser>();
-            waterDispensor.PlaceGlass(glass);
+            WaterDispenser waterDispenser = waterDispenserObject.GetComponent<WaterDispenser>();
+            waterDispenser.PlaceGlass(glass);
         }
+        UpdateClickableDict("WaterDispenser", true);
+        TaskController.Instance.TryNextTask(3);
+    }
+
+    public void OnWaterDispenserClick(WaterDispenser waterDispenser) {
+        UpdateClickableDict("Plant", true);
+        TaskController.Instance.TryNextTask(4);
+    }
+
+    public void OnBoardClick(WhiteBoard board) {
+        if (prevClickedGameObject != null && prevClickedGameObject.GetComponent<Pen>() != null)
+        {
+            Pen pen = prevClickedGameObject.GetComponent<Pen>();
+            Color penColor = pen.GetColor();
+            board.ChangeBoardColor(penColor);
+        }
+        UpdateClickableDict("Glass", true);
+        TaskController.Instance.TryNextTask(2);
     }
 
     public void OnPlantClick(Plant plant) {
@@ -42,13 +85,16 @@ public class ClickedObjectController : MonoBehaviour
         Glass glass = waterDispenser.GetGlass();
         waterDispenser.SetGlass(null);
         StartCoroutine(PourWaterToPlant(plant, glass));
-        
+        UpdateClickableDict("Bin", true);
+        TaskController.Instance.TryNextTask(5);
     }
 
     public void OnBinClick(Bin bin) {
         if (trashGlass == null) return;
 
         StartCoroutine(ThrowGlassIntoBin(bin, trashGlass));
+        UpdateClickableDict("Door", true);
+        TaskController.Instance.TryNextTask(6);
     }
 
     public void OnDoorClick(Door door) {

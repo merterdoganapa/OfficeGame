@@ -4,12 +4,15 @@ using UnityEngine;
 
 namespace OfficeObjects
 {
-    public class Door : OfficeObject, IClickable
+    public class Door : OfficeObject
     {
-        public void Click()
+        public override void Click()
         {
-            ClickedObjectController.Instance.SetClickedObject(gameObject);
-            ClickedObjectController.Instance.OnDoorClick(this);
+            if (ClickedObjectController.canClickable[objectName])
+            {
+                base.Click();
+                ClickedObjectController.Instance.OnDoorClick(this);
+            }
         }
     }
 
