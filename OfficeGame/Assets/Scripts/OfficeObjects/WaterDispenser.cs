@@ -12,11 +12,13 @@ namespace OfficeObjects
         [SerializeField] private ParticleSystem glassParticalSys;
         private Glass glass;
         private bool isGlassArrived;
+        private bool isRunning;
 
         public override void Awake()
         {
             base.Awake();
             isGlassArrived = false;
+            isRunning = false;
         }
 
         public override void Click()
@@ -25,11 +27,12 @@ namespace OfficeObjects
             {
                 if (glass == null)
                     return;
-                else if (isGlassArrived && !glass.IsFull()) 
+                else if (isGlassArrived && !glass.IsFull() && !isRunning) 
                 {
                     base.Click();
                     ClickedObjectController.Instance.OnWaterDispenserClick(this);
                     StartCoroutine(PourWaterToGlass());
+                    isRunning = true;
                 }
             }
         }
