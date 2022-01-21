@@ -107,7 +107,7 @@ public class ClickedObjectController : MonoBehaviour
     }
 
     void FinishGame() {
-        TaskController.Instance.DestroyTasks();
+        GameController.Intance.FinishGame();
     }
 
     IEnumerator ThrowGlassIntoBin(Bin bin,Glass glass) {

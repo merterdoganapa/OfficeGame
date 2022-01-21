@@ -20,12 +20,7 @@ public class TaskController : MonoBehaviour
         Instance = this;
     }
 
-    private void Start()
-    {
-        GenerateTasks();
-    }
-
-    private void GenerateTasks()
+    public void GenerateTasks()
     {
         for (int i = 0; i < taskArray.Length; i++)
         {

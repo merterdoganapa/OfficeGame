@@ -8,6 +8,7 @@ using UnityEngine.SceneManagement;
 public class MenuController : MonoBehaviour
 {
     [SerializeField] private GameObject pauseMenuPanel;
+    [SerializeField] private GameObject finishMenuPanel;
 
     public static MenuController Instance;
 
@@ -20,7 +21,7 @@ public class MenuController : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.P))
         {
-            OpenMenu();
+            OpenPauseMenu();
         }
         if (Input.GetKeyDown(KeyCode.Escape))
         {
@@ -30,7 +31,7 @@ public class MenuController : MonoBehaviour
 
     public void OnPauseButtonClick()
     {
-        OpenMenu();
+        OpenPauseMenu();
     }
     public void OnRestartButtonClick() {
         SceneManager.LoadScene(0);
@@ -44,10 +45,21 @@ public class MenuController : MonoBehaviour
         CloseMenu();
     }
 
-    public void OpenMenu() {
-        pauseMenuPanel.SetActive(true);
-        pauseMenuPanel.GetComponent<Image>().DOFade(.6f, 1);
+    public void OpenPauseMenu() {
+        StartAnimation(pauseMenuPanel);
     }
+
+    public void OpenFinishMenu()
+    {
+        StartAnimation(finishMenuPanel);
+    }
+
+    void StartAnimation(GameObject gameObject)
+    {
+        gameObject.SetActive(true);
+        gameObject.GetComponent<Image>().DOFade(.6f, 1);
+    }
+
 
     public void CloseMenu() {
         pauseMenuPanel.GetComponent<Image>().DOFade(0f, 1);
