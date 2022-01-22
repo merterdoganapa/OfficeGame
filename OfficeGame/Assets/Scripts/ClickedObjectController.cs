@@ -35,11 +35,12 @@ public class ClickedObjectController : MonoBehaviour
 
     public void SetClickedObject(GameObject gameObject)
     {
-        prevClickedGameObject = clickedObject;
-        clickedObject = gameObject;
+        if(clickedObject != gameObject)
+        {
+            prevClickedGameObject = clickedObject;
+            clickedObject = gameObject;
+        }
     }
-
-    
 
     void UpdateClickableDict(string key,bool value) {
         canClickable[key] = value;
@@ -56,9 +57,9 @@ public class ClickedObjectController : MonoBehaviour
         {
             WaterDispenser waterDispenser = waterDispenserObject.GetComponent<WaterDispenser>();
             waterDispenser.PlaceGlass(glass);
+            UpdateClickableDict("WaterDispenser", true);
+            TaskController.Instance.TryNextTask(3);
         }
-        UpdateClickableDict("WaterDispenser", true);
-        TaskController.Instance.TryNextTask(3);
     }
 
     public void OnWaterDispenserClick(WaterDispenser waterDispenser) {
@@ -72,9 +73,9 @@ public class ClickedObjectController : MonoBehaviour
             Pen pen = prevClickedGameObject.GetComponent<Pen>();
             Color penColor = pen.GetColor();
             board.ChangeBoardColor(penColor);
+            UpdateClickableDict("Glass", true);
+            TaskController.Instance.TryNextTask(2);
         }
-        UpdateClickableDict("Glass", true);
-        TaskController.Instance.TryNextTask(2);
     }
 
     public void OnPlantClick(Plant plant) {
@@ -84,26 +85,29 @@ public class ClickedObjectController : MonoBehaviour
 
         Glass glass = waterDispenser.GetGlass();
         waterDispenser.SetGlass(null);
-        StartCoroutine(PourWaterToPlant(plant, glass));
-        UpdateClickableDict("Bin", true);
-        TaskController.Instance.TryNextTask(5);
+        if (!canClickable["Bin"])
+        {
+            StartCoroutine(PourWaterToPlant(plant, glass));
+            UpdateClickableDict("Bin", true);
+            TaskController.Instance.TryNextTask(5);
+        }
     }
 
     public void OnBinClick(Bin bin) {
         if (trashGlass == null) return;
-
-        StartCoroutine(ThrowGlassIntoBin(bin, trashGlass));
-        UpdateClickableDict("Door", true);
-        TaskController.Instance.TryNextTask(6);
+        if (!canClickable["Door"]) { 
+            StartCoroutine(ThrowGlassIntoBin(bin, trashGlass));
+            UpdateClickableDict("Door", true);
+            TaskController.Instance.TryNextTask(6);
+        }
     }
 
     public void OnDoorClick(Door door) {
-        StartCoroutine(RotateDoor(door));
+        FinishGame();
     }
 
-    IEnumerator RotateDoor(Door door) {
-        Vector3 desiredRotation = new Vector3(0, -45, 0);
-        yield return door.transform.DORotate(desiredRotation, 2f).WaitForCompletion();
+    void FinishGame() {
+        GameController.Intance.FinishGame();
     }
 
     IEnumerator ThrowGlassIntoBin(Bin bin,Glass glass) {

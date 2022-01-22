@@ -4,12 +4,12 @@ using UnityEngine;
 using UnityEngine.UI;
 using OfficeObjects;
 using DG.Tweening;
+using System;
 
 public class TaskController : MonoBehaviour
 {
-    [SerializeField] private Task newTask;
-    [SerializeField] private Task oldTask;
-    [Space()]
+    [SerializeField] private Transform taskPanel;
+    [SerializeField] private GameObject taskPrefab;
     [SerializeField] private string[] taskArray;
     private int taskIndex = 0;
 
@@ -20,35 +20,31 @@ public class TaskController : MonoBehaviour
         Instance = this;
     }
 
-    private void Start()
+    public void GenerateTasks()
     {
-        NextTask(0);
-    }
-
-    void UpdateTaskText(int taskIndex) {
-        string taskString = taskArray[taskIndex];
-        newTask.UpdateText(taskString);
-    }
-
-    public void TryNextTask(int index) {
-        if (index == taskIndex + 1) 
+        for (int i = 0; i < taskArray.Length; i++)
         {
-            SwapTask();
-            NextTask(index);
-            oldTask.StartOutroAnimation();
+            Task generatedTask = Instantiate(taskPrefab, taskPanel).GetComponent<Task>();
+            generatedTask.UpdateText(taskArray[i]);
         }
     }
 
-    void SwapTask() {
-        Task tmpTask = newTask;
-        newTask = oldTask;
-        oldTask = tmpTask;
+    public bool TryNextTask(int index)
+    {
+        if(index == taskIndex + 1)
+        {
+            taskPanel.GetChild(0).GetComponent<Task>().MinimizeObject();
+            taskIndex = index;
+            return true;
+        }
+        return false;
     }
 
-    void NextTask(int index) {
-        taskIndex = index;
-        UpdateTaskText(taskIndex);
-        newTask.StartIntroAnimation();
+    public void DestroyTasks() {
+        for (int i = taskPanel.childCount - 1; i >= 0; i--)
+        {
+            taskPanel.GetChild(0).GetComponent<Task>().MinimizeObject();
+        }
     }
 
 }
