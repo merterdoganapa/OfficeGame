@@ -6,7 +6,8 @@ using DG.Tweening;
 
 public class ClickedObjectController : MonoBehaviour
 {
-    [SerializeField] private GameObject waterDispenserObject;
+    [SerializeField] private WaterDispenser waterDispenser;
+    [SerializeField] private Door door;
     private GameObject prevClickedGameObject;
     private GameObject clickedObject;
     private Glass trashGlass;
@@ -55,7 +56,6 @@ public class ClickedObjectController : MonoBehaviour
     {
         if (!isTrashable)
         {
-            WaterDispenser waterDispenser = waterDispenserObject.GetComponent<WaterDispenser>();
             waterDispenser.PlaceGlass(glass);
             UpdateClickableDict("WaterDispenser", true);
             TaskController.Instance.TryNextTask(3);
@@ -79,8 +79,6 @@ public class ClickedObjectController : MonoBehaviour
     }
 
     public void OnPlantClick(Plant plant) {
-        WaterDispenser waterDispenser = waterDispenserObject.GetComponent<WaterDispenser>();
-        
         if (!waterDispenser.IsGlassFull()) return;
 
         Glass glass = waterDispenser.GetGlass();
@@ -103,6 +101,7 @@ public class ClickedObjectController : MonoBehaviour
     }
 
     public void OnDoorClick(Door door) {
+        door.KillAnimations();
         FinishGame();
     }
 
@@ -115,6 +114,7 @@ public class ClickedObjectController : MonoBehaviour
         yield return glass.transform.DOMove(bin.transform.position, .75f).WaitForCompletion();
         bin.PlaySound();
         trashGlass = null;
+        door.StartBlinkingAnimation();
     }
 
     IEnumerator PrepareForPour(Plant plant,Glass glass,GameObject glassModel) {
